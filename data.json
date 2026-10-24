@@ -1,0 +1,293 @@
+{
+  "headers": [
+    {
+      "name": "Content-Security-Policy",
+      "description": "Tells the browser which sources scripts, styles, images, frames and other resources may be loaded from. A well-built policy is the strongest defence-in-depth control against script injection, because injected markup cannot pull in or execute unauthorised code.",
+      "recommendedValue": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy",
+      "notes": [
+        "'unsafe-inline' and 'unsafe-eval' largely defeat the purpose of a CSP.",
+        "Wildcards and broad CDN allowances can be bypassed through JSONP endpoints or hosted libraries such as Angular.",
+        "Without base-uri, an injected <base> tag can redirect relative script URLs.",
+        "frame-ancestors is the modern replacement for X-Frame-Options and takes precedence where both exist."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Cross-Site Scripting (XSS)",
+          "description": "Attacker-controlled script runs in the context of the trusted origin, allowing session theft, credential phishing or actions performed as the victim.",
+          "link": "https://owasp.org/www-community/attacks/xss/"
+        },
+        {
+          "name": "Clickjacking",
+          "description": "The page is embedded in an attacker's frame and overlaid with decoy UI, tricking the user into clicking something they did not intend.",
+          "link": "https://owasp.org/www-community/attacks/Clickjacking"
+        },
+        {
+          "name": "Malicious third-party resource injection",
+          "description": "Compromised or untrusted CDNs and widgets execute code with the same privileges as the host page.",
+          "link": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "name": "Strict-Transport-Security",
+      "description": "Instructs the browser to use HTTPS for every future request to this host for the lifetime given in max-age. This closes the window where a user types a bare hostname and the first request travels over plain HTTP.",
+      "recommendedValue": "max-age=63072000; includeSubDomains; preload",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+      "notes": [
+        "The header is ignored when the response itself was not delivered over a valid HTTPS connection.",
+        "The very first visit is not covered; preload lists and HSTS-aware clients reduce that exposure.",
+        "includeSubDomains applies the policy to every subdomain, including internal or legacy hosts.",
+        "Start with a short max-age while validating, then raise it before submitting to the preload list."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "SSL stripping / man-in-the-middle",
+          "description": "An attacker on the network rewrites HTTPS links to HTTP and relays traffic, capturing credentials and session cookies in clear text.",
+          "link": "https://owasp.org/www-community/attacks/Manipulator-in-the-middle_attack"
+        },
+        {
+          "name": "Protocol downgrade",
+          "description": "Clients are pushed from HTTPS to weaker or unencrypted transport, exposing data that was assumed to be protected.",
+          "link": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html"
+        },
+        {
+          "name": "Session hijacking",
+          "description": "Cookies sent over an intercepted HTTP request can be replayed by an attacker to take over an authenticated session.",
+          "link": "https://owasp.org/www-community/attacks/Session_hijacking_attack"
+        }
+      ]
+    },
+    {
+      "name": "X-Content-Type-Options",
+      "description": "Disables MIME sniffing. Browsers must trust the declared Content-Type instead of guessing what a file is, which stops files that look harmless from being treated as executable HTML or JavaScript.",
+      "recommendedValue": "nosniff",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options",
+      "notes": [
+        "Only helps when the server sends an accurate Content-Type; a wrong type is still honoured.",
+        "Particularly important for user-uploaded content, file downloads and API responses.",
+        "Does not stop XSS when the server itself reflects or stores markup as text/html."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "MIME confusion / content sniffing",
+          "description": "A browser reinterprets a file as a different type than declared, turning an image or text file into executable script.",
+          "link": "https://owasp.org/www-community/attacks/Content_Spoofing"
+        },
+        {
+          "name": "Cross-Site Scripting via uploads",
+          "description": "An uploaded file served without nosniff can be sniffed as HTML and execute script when a victim opens its URL.",
+          "link": "https://owasp.org/www-community/attacks/xss/"
+        },
+        {
+          "name": "Drive-by download",
+          "description": "Content that looks benign is interpreted as an executable or active document by the browser.",
+          "link": "https://owasp.org/www-community/attacks/Drive-by_Download"
+        }
+      ]
+    },
+    {
+      "name": "X-Frame-Options",
+      "description": "Controls whether the page may be rendered inside a frame or iframe. DENY forbids all framing and SAMEORIGIN allows only pages from the same origin.",
+      "recommendedValue": "DENY",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options",
+      "notes": [
+        "CSP frame-ancestors supersedes this header in modern browsers; send both for older clients.",
+        "ALLOW-FROM is obsolete and ignored by most current browsers.",
+        "Does not restrict pop-ups opened with window.open or framing performed by privileged extensions.",
+        "SAMEORIGIN is a common compromise when the application legitimately frames itself."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Clickjacking",
+          "description": "An invisible or disguised frame is placed over attacker-controlled UI so victim clicks perform unintended actions.",
+          "link": "https://owasp.org/www-community/attacks/Clickjacking"
+        },
+        {
+          "name": "UI redressing / likejacking",
+          "description": "Social actions, purchases or permission prompts are triggered through deceptive overlays.",
+          "link": "https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html"
+        },
+        {
+          "name": "Cursorjacking / tabjacking",
+          "description": "The rendered cursor or tab context is manipulated to misrepresent what the user is interacting with.",
+          "link": "https://owasp.org/www-community/attacks/Clickjacking"
+        }
+      ]
+    },
+    {
+      "name": "X-XSS-Protection",
+      "description": "Legacy header that toggled the built-in reflective XSS filter in older browsers. The filter is removed from current browsers and could itself introduce side channels, so the modern recommendation is to send 0 and rely on Content-Security-Policy instead.",
+      "recommendedValue": "0",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection",
+      "notes": [
+        "Deprecated: Chrome, Edge, Safari and Firefox no longer implement the filter.",
+        "Sending 1; mode=block is not a substitute for a CSP or correct output encoding.",
+        "The old filter could be abused to leak information or create new XSS primitives.",
+        "Presence of this header alone should not be treated as meaningful protection on modern browsers."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Reflected Cross-Site Scripting (XSS)",
+          "description": "Input echoed back in a response is interpreted as script; without a real defence the payload executes in the victim's browser.",
+          "link": "https://owasp.org/www-community/attacks/xss/"
+        },
+        {
+          "name": "Filter bypass and information leakage",
+          "description": "The legacy auditor could be tricked into blocking benign content or exposing cross-origin data, giving a false sense of protection.",
+          "link": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        },
+        {
+          "name": "DOM-based XSS",
+          "description": "Client-side code writes attacker-controlled data into the DOM; no browser header can filter this, output encoding and CSP are required.",
+          "link": "https://owasp.org/www-community/attacks/DOM_Based_XSS"
+        }
+      ]
+    },
+    {
+      "name": "Referrer-Policy",
+      "description": "Decides how much of the current URL is sent in the Referer header on outgoing requests. Restricting it keeps sensitive path segments, query parameters and tokens from leaking to other origins.",
+      "recommendedValue": "strict-origin-when-cross-origin",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy",
+      "notes": [
+        "strict-origin-when-cross-origin sends the full path only for same-origin requests.",
+        "no-referrer is the strictest option but breaks some analytics and anti-CSRF referer checks.",
+        "URLs containing reset tokens, user IDs or search terms are the usual source of leaks.",
+        "The legacy Referrer-Policy: unsafe-url explicitly restores full-URL leakage."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Sensitive data leakage in URLs",
+          "description": "Tokens, email addresses or internal paths in the Referer header are exposed to third-party sites and their logs.",
+          "link": "https://owasp.org/www-community/vulnerabilities/Information_exposure_through_query_strings_in_url"
+        },
+        {
+          "name": "Cross-origin tracking and privacy loss",
+          "description": "Full referrer paths let third parties build a browsing profile or correlate users across sites.",
+          "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy"
+        },
+        {
+          "name": "Token harvesting from reset links",
+          "description": "A password reset link opened on a page that loads remote resources can send the secret token to an external host.",
+          "link": "https://cheatsheetseries.owasp.org/cheatsheets/Password_Reset_Cheat_Sheet.html"
+        }
+      ]
+    },
+    {
+      "name": "Permissions-Policy",
+      "description": "Allowlists or blocks powerful browser features such as camera, microphone, geolocation and payment APIs for the page and any embedded frames. Disabling unused features shrinks the attack surface available to injected content.",
+      "recommendedValue": "camera=(), microphone=(), geolocation=(), payment=()",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy",
+      "notes": [
+        "Previously named Feature-Policy; the older header is deprecated.",
+        "Features are allowed by default unless explicitly denied, so an empty policy is not protective.",
+        "Third-party iframes can request features only if both the top-level page and the frame allow them.",
+        "Some features remain available through browser extensions regardless of the policy."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Unauthorised device access",
+          "description": "Injected or embedded content prompts for camera, microphone or location access that the application never needed.",
+          "link": "https://owasp.org/www-project-secure-headers/"
+        },
+        {
+          "name": "Feature abuse via malicious iframes",
+          "description": "Third-party widgets inherit access to powerful APIs and can misuse them without the user understanding the context.",
+          "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy"
+        },
+        {
+          "name": "Expanded attack surface after XSS",
+          "description": "A script injection can reach sensors and payment surfaces that would otherwise be unavailable.",
+          "link": "https://owasp.org/www-community/attacks/xss/"
+        }
+      ]
+    },
+    {
+      "name": "Cross-Origin-Opener-Policy",
+      "description": "Gives the document a fresh browsing context group so other origins cannot hold a reference to its window object. This blocks cross-window scripting and several timing-based cross-site leaks.",
+      "recommendedValue": "same-origin",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy",
+      "notes": [
+        "same-origin severs window.opener relationships with cross-origin pages.",
+        "OAuth and payment pop-ups may depend on opener access; test those flows before enforcing it.",
+        "Pairs with Cross-Origin-Embedder-Policy to enable crossOriginIsolated, which unlocks SharedArrayBuffer.",
+        "unsafe-none is the default and provides no isolation."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Cross-window scripting (window.opener)",
+          "description": "A page opened from the target can navigate or manipulate the opener, enabling phishing and tabnabbing.",
+          "link": "https://owasp.org/www-community/attacks/Reverse_Tabnabbing"
+        },
+        {
+          "name": "Cross-site leaks (XS-Leaks)",
+          "description": "Attackers infer state from cross-origin window references and timing, exposing user data without reading it directly.",
+          "link": "https://xsleaks.dev/"
+        },
+        {
+          "name": "Spectre-class side channels",
+          "description": "Without process isolation, speculative execution gadgets can leak memory across origins.",
+          "link": "https://spectreattack.com/"
+        }
+      ]
+    },
+    {
+      "name": "Cross-Origin-Resource-Policy",
+      "description": "Declares who may embed the response as a resource. same-origin stops other sites from loading your images, scripts, fonts and API responses into their own pages.",
+      "recommendedValue": "same-origin",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy",
+      "notes": [
+        "same-site is a middle ground for resources shared across subdomains.",
+        "cross-origin is required for resources intentionally consumed by other sites, such as public CDNs.",
+        "Complements CORS: CORP blocks no-cors embedding, CORS governs readable cross-origin responses.",
+        "Applied per response, so static assets and APIs may need different values."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Cross-site leaks (XS-Leaks)",
+          "description": "Attackers detect whether a resource loads or how large it is to infer private state about the user.",
+          "link": "https://xsleaks.dev/"
+        },
+        {
+          "name": "Data exfiltration via embedded resources",
+          "description": "Authenticated images, documents or API output are pulled into an attacker page and measured or displayed.",
+          "link": "https://owasp.org/www-project-secure-headers/"
+        },
+        {
+          "name": "Spectre-class side channels",
+          "description": "Cross-origin resources in the same process can become a vector for speculative execution attacks.",
+          "link": "https://spectreattack.com/"
+        }
+      ]
+    },
+    {
+      "name": "Cross-Origin-Embedder-Policy",
+      "description": "Requires every cross-origin resource to opt in with CORS or CORP before it may be embedded. Combined with COOP it enables crossOriginIsolated and protects against speculative execution attacks.",
+      "recommendedValue": "require-corp",
+      "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy",
+      "notes": [
+        "require-corp breaks third-party images, scripts and fonts that do not send CORP or CORS headers.",
+        "credentialless is an alternative that loads cross-origin resources without credentials.",
+        "Only provides meaningful isolation when Cross-Origin-Opener-Policy is also set.",
+        "Test embedded payment, video and social widgets before rolling it out."
+      ],
+      "vulnerabilities": [
+        {
+          "name": "Spectre-class side-channel attacks",
+          "description": "Shared process state allows speculative execution to read memory belonging to other origins.",
+          "link": "https://spectreattack.com/"
+        },
+        {
+          "name": "Cross-origin data leaks",
+          "description": "Malicious cross-origin resources mixed into the page can observe or influence sensitive application state.",
+          "link": "https://xsleaks.dev/"
+        },
+        {
+          "name": "Resource substitution",
+          "description": "An attacker-supplied cross-origin resource is loaded in place of a trusted one and executes in the page context.",
+          "link": "https://owasp.org/www-project-secure-headers/"
+        }
+      ]
+    }
+  ]
+}

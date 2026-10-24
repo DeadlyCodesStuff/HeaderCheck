@@ -1,0 +1,21 @@
+# Build output
+bin/
+obj/
+publish/
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userprefs
+
+# Test and coverage output
+TestResults/
+coverage/
+*.trx
+
+# OS junk
+.DS_Store
+Thumbs.db

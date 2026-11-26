@@ -32,10 +32,26 @@ Clone the repo and start it with `dotnet run`:
 ```bash
 git clone <repo-url>
 cd HeaderCheck
-dotnet run
+dotnet run --project src/HeaderCheck
 ```
 
 Then type a URL when prompted. You can enter `example.com` instead of a full URL; it assumes HTTPS if you leave the scheme off. Pressing Enter or typing `q` at the header menu exits.
+
+Or pass the URL and options directly, which skips the menu:
+
+```bash
+dotnet run --project src/HeaderCheck -- example.com --json report.json --html report.html --fail-on high
+```
+
+`--fail-on` makes the exit code 1 when a finding is at least that severe, so it can gate a build. Run with `--help` for every option.
+
+## Project layout
+
+| Path | What it holds |
+| --- | --- |
+| `src/HeaderCheck.Core` | The scanner, the checks, scoring and the JSON/HTML reports. No console code. |
+| `src/HeaderCheck` | The console app and `data.json`. |
+| `tests/HeaderCheck.Tests` | xUnit tests. Run them with `dotnet test`. |
 
 ## What the output looks like
 

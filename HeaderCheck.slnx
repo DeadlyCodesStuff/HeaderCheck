@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HeaderCheck.Core/HeaderCheck.Core.csproj" />
+    <Project Path="src/HeaderCheck/HeaderCheck.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HeaderCheck.Tests/HeaderCheck.Tests.csproj" />
+  </Folder>
+</Solution>

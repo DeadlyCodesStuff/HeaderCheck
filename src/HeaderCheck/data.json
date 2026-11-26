@@ -5,6 +5,7 @@
       "description": "Tells the browser which sources scripts, styles, images, frames and other resources may be loaded from. A well-built policy is the strongest defence-in-depth control against script injection, because injected markup cannot pull in or execute unauthorised code.",
       "recommendedValue": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy",
+      "missingSeverity": null,
       "notes": [
         "'unsafe-inline' and 'unsafe-eval' largely defeat the purpose of a CSP.",
         "Wildcards and broad CDN allowances can be bypassed through JSONP endpoints or hosted libraries such as Angular.",
@@ -34,6 +35,7 @@
       "description": "Instructs the browser to use HTTPS for every future request to this host for the lifetime given in max-age. This closes the window where a user types a bare hostname and the first request travels over plain HTTP.",
       "recommendedValue": "max-age=63072000; includeSubDomains; preload",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+      "missingSeverity": null,
       "notes": [
         "The header is ignored when the response itself was not delivered over a valid HTTPS connection.",
         "The very first visit is not covered; preload lists and HSTS-aware clients reduce that exposure.",
@@ -63,6 +65,7 @@
       "description": "Disables MIME sniffing. Browsers must trust the declared Content-Type instead of guessing what a file is, which stops files that look harmless from being treated as executable HTML or JavaScript.",
       "recommendedValue": "nosniff",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options",
+      "missingSeverity": "Medium",
       "notes": [
         "Only helps when the server sends an accurate Content-Type; a wrong type is still honoured.",
         "Particularly important for user-uploaded content, file downloads and API responses.",
@@ -91,6 +94,7 @@
       "description": "Controls whether the page may be rendered inside a frame or iframe. DENY forbids all framing and SAMEORIGIN allows only pages from the same origin.",
       "recommendedValue": "DENY",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options",
+      "missingSeverity": "Low",
       "notes": [
         "CSP frame-ancestors supersedes this header in modern browsers; send both for older clients.",
         "ALLOW-FROM is obsolete and ignored by most current browsers.",
@@ -120,6 +124,7 @@
       "description": "Legacy header that toggled the built-in reflective XSS filter in older browsers. The filter is removed from current browsers and could itself introduce side channels, so the modern recommendation is to send 0 and rely on Content-Security-Policy instead.",
       "recommendedValue": "0",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection",
+      "missingSeverity": null,
       "notes": [
         "Deprecated: Chrome, Edge, Safari and Firefox no longer implement the filter.",
         "Sending 1; mode=block is not a substitute for a CSP or correct output encoding.",
@@ -149,6 +154,7 @@
       "description": "Decides how much of the current URL is sent in the Referer header on outgoing requests. Restricting it keeps sensitive path segments, query parameters and tokens from leaking to other origins.",
       "recommendedValue": "strict-origin-when-cross-origin",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy",
+      "missingSeverity": "Low",
       "notes": [
         "strict-origin-when-cross-origin sends the full path only for same-origin requests.",
         "no-referrer is the strictest option but breaks some analytics and anti-CSRF referer checks.",
@@ -178,6 +184,7 @@
       "description": "Allowlists or blocks powerful browser features such as camera, microphone, geolocation and payment APIs for the page and any embedded frames. Disabling unused features shrinks the attack surface available to injected content.",
       "recommendedValue": "camera=(), microphone=(), geolocation=(), payment=()",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy",
+      "missingSeverity": "Low",
       "notes": [
         "Previously named Feature-Policy; the older header is deprecated.",
         "Features are allowed by default unless explicitly denied, so an empty policy is not protective.",
@@ -207,6 +214,7 @@
       "description": "Gives the document a fresh browsing context group so other origins cannot hold a reference to its window object. This blocks cross-window scripting and several timing-based cross-site leaks.",
       "recommendedValue": "same-origin",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy",
+      "missingSeverity": "Info",
       "notes": [
         "same-origin severs window.opener relationships with cross-origin pages.",
         "OAuth and payment pop-ups may depend on opener access; test those flows before enforcing it.",
@@ -236,6 +244,7 @@
       "description": "Declares who may embed the response as a resource. same-origin stops other sites from loading your images, scripts, fonts and API responses into their own pages.",
       "recommendedValue": "same-origin",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy",
+      "missingSeverity": "Info",
       "notes": [
         "same-site is a middle ground for resources shared across subdomains.",
         "cross-origin is required for resources intentionally consumed by other sites, such as public CDNs.",
@@ -265,6 +274,7 @@
       "description": "Requires every cross-origin resource to opt in with CORS or CORP before it may be embedded. Combined with COOP it enables crossOriginIsolated and protects against speculative execution attacks.",
       "recommendedValue": "require-corp",
       "link": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy",
+      "missingSeverity": "Info",
       "notes": [
         "require-corp breaks third-party images, scripts and fonts that do not send CORP or CORS headers.",
         "credentialless is an alternative that loads cross-origin resources without credentials.",

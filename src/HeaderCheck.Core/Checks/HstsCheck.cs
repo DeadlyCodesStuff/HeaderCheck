@@ -21,36 +21,33 @@ public sealed class HstsCheck : ICheck
 
         var value = context.Final.Get("Strict-Transport-Security");
 
-        if (context.Final.IsHttps && value == null)
+        if (value is null)
         {
-            yield return new Finding(
-                "hsts.missing",
-                Severity.High,
-                "No HSTS header",
-                "Without Strict-Transport-Security, a browser will still try plain HTTP when someone types the address or follows an http:// link, and an attacker on the same network can stop the upgrade to HTTPS (SSL stripping). Send max-age=31536000; includeSubDomains.",
-                value
-            );
-            yield break;
-        }
-        if (!context.Final.IsHttps)
-        {
-            if (value is not null)
+            if (context.Final.IsHttps)
             {
                 yield return new Finding(
+                    "hsts.missing",
+                    Severity.High,
+                    "No HSTS header",
+                    "Without Strict-Transport-Security, a browser will still try plain HTTP when someone types the address or follows an http:// link, and an attacker on the same network can stop the upgrade to HTTPS (SSL stripping). Send max-age=31536000; includeSubDomains.",
+                    value
+                );
+            }
+            yield break;
+        }
+
+        if (!context.Final.IsHttps)
+        {
+            yield return new Finding(
                 "hsts.over-http",
                 Severity.Info,
                 "HSTS is sent over plain HTTP",
                 "Browsers ignore Strict-Transport-Security on an unencrypted response, because an attacker could have added or removed it. Send it on the HTTPS response instead.",
                 value
             );
-                yield break;
-            }
-            else
-            {
-                yield break;
-            }
-
+            yield break;
         }
+
         foreach (var part in value.Split(';'))
         {
             var pieces = part.Split('=', 2);

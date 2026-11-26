@@ -39,8 +39,12 @@ public class CookieCheckTests
     }
 
     [Fact]
-    public void Secure_prefix_needs_secure() =>
-        T.Codes(With("__Secure-id=1; HttpOnly; SameSite=Lax"), "cookie.bad-prefix", "cookie.no-secure");
+    public void Secure_prefix_needs_secure()
+    {
+        var findings = With("__Secure-id=1; HttpOnly; SameSite=Lax");
+        T.Codes(findings, "cookie.bad-prefix", "cookie.no-secure");
+        Assert.Equal(Severity.High, T.One(findings, "cookie.bad-prefix").Severity);
+    }
 
     [Theory]
     [InlineData("__Host-id=1; Secure; HttpOnly; SameSite=Lax; Path=/; Domain=a.test")]

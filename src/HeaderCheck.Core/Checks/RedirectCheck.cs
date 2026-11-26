@@ -23,12 +23,12 @@ public sealed class RedirectCheck : ICheck
     public string Name => "Redirects";
 
     static string BareHost(Uri uri)
-{
-    var host = uri.Host;
-    return host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
-        ? host[4..]
-        : host;
-}     
+    {
+        var host = uri.Host;
+        return host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
+            ? host[4..]
+            : host;
+    }
     public IEnumerable<Finding> Run(ScanContext context)
     {
         if (!context.Final.IsHttps)
@@ -68,24 +68,24 @@ public sealed class RedirectCheck : ICheck
                 );
             }
         }
-        if(context.Redirects.Count > 3)
+        if (context.Redirects.Count > 3)
         {
             yield return new Finding(
                     "redirect.long-chain",
                     Severity.Low,
                     "The redirect chain is long",
                     "Each hop is another round trip before the page loads, and a long chain usually means old redirects nobody cleaned up. Redirect straight to the final address.",
-                    $"{context.Final.Url.Host}"
+                    $"{context.Redirects.Count}"
                 );
         }
-        if(BareHost(context.Requested) != BareHost(context.Final.Url))
+        if (BareHost(context.Requested) != BareHost(context.Final.Url))
         {
             yield return new Finding(
                     "redirect.other-host",
                     Severity.Info,
                     "The site ends up on a different host",
                     "The user lands somewhere other than the site they asked for. That is often intended, such as a login provider, but check that every host in the chain is yours.",
-                    $"{context.Redirects.Count}"
+                    context.Final.Url.Host
                 );
         }
 

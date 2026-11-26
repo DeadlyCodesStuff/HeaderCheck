@@ -74,6 +74,7 @@ public class CspCheckTests
     [InlineData("https:")]
     [InlineData("http:")]
     [InlineData("data:")]
+    [InlineData("HTTPS:")]
     public void Wildcard_script_sources_are_high(string source) =>
         T.Codes(With($"script-src 'self' {source}; " + Tail), "csp.wildcard-scripts");
 

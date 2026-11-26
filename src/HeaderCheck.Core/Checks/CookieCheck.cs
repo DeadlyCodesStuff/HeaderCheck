@@ -17,18 +17,18 @@ public sealed class CookieCheck : ICheck
         {
             string name;
             bool secure = false;
-            bool httponly =false;
+            bool httponly = false;
             string? samesite = null;
             bool hasDomain = false;
             string? path = null;
             var segments = cookie.Split(';');
-            
+
             var parts = segments[0].Split('=', 2);
             if (parts.Length < 2)
                 continue;
 
             name = parts[0].Trim();
-            foreach(var segment in  segments.Skip(1))
+            foreach (var segment in segments.Skip(1))
             {
                 var pieces = segment.Split('=', 2);
                 var attrName = pieces[0].Trim();
@@ -40,24 +40,25 @@ public sealed class CookieCheck : ICheck
                         break;
 
                     case "httponly":
-                    httponly = true;
-                    break;
+                        httponly = true;
+                        break;
 
                     case "samesite":
-                    samesite = attrValue;
-                    break;
+                        samesite = attrValue;
+                        break;
 
                     case "domain":
-                    hasDomain = true;
-                    break;
+                        hasDomain = true;
+                        break;
 
                     case "path":
-                    path = attrValue;
-                    break;
+                        path = attrValue;
+                        break;
 
                 }
             }
-            if (string.Equals(samesite, "None", StringComparison.OrdinalIgnoreCase) && !secure){
+            if (string.Equals(samesite, "None", StringComparison.OrdinalIgnoreCase) && !secure)
+            {
                 yield return new Finding(
                 "cookie.samesite-none-insecure",
                 Severity.High,
